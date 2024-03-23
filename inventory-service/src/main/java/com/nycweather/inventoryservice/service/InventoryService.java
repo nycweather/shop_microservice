@@ -1,5 +1,9 @@
 package com.nycweather.inventoryservice.service;
 
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+
 public interface InventoryService {
-    Boolean checkInventory(String productName, Integer quantity);
+    ResponseEntity<Object> checkInventory(List<String> productName, List<Integer> quantity);
 }

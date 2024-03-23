@@ -3,11 +3,12 @@ package com.nycweather.orderservice.service;
 import com.nycweather.orderservice.dto.OrderRequestDTO;
 import com.nycweather.orderservice.dto.OrderResponseDTO;
 import com.nycweather.orderservice.dto.SingleOrderItemResponseDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface OrderService {
-    void createOrder(OrderRequestDTO orderRequestDTO);
+    ResponseEntity<Object> createOrder(OrderRequestDTO orderRequestDTO);
 
     List<OrderResponseDTO> getAllOrders();
 

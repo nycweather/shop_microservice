@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/inventory")
 public class InventoryController {
@@ -18,11 +20,7 @@ public class InventoryController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<String> checkInventory(@RequestParam String productName, @RequestParam Integer quantity) {
-        if (inventoryService.checkInventory(productName, quantity)) {
-            return ResponseEntity.ok("Inventory is available");
-        } else {
-            return ResponseEntity.ok("Inventory is not available");
-        }
+    public ResponseEntity<Object> checkInventory(@RequestParam List<String> productName, @RequestParam List<Integer> quantity) {
+        return inventoryService.checkInventory(productName, quantity);
     }
 }

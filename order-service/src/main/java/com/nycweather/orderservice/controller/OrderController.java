@@ -27,8 +27,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Object> createOrder(@RequestBody @Valid OrderRequestDTO orderRequestDTO) {
         log.info("Order creation request received");
-        orderService.createOrder(orderRequestDTO);
-        return new ResponseEntity<>("Order created", HttpStatus.CREATED);
+        return orderService.createOrder(orderRequestDTO);
     }
 
     @GetMapping("/all_orders")

@@ -11,10 +11,13 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "inventory_table")
-public class Inventory {
+@Table(name = "inventory_sku_table")
+public class InventorySku {
     @Id
+    private String sku;
     private String productId;
     private String productName;
-    private Integer quantity;
+    private Double price;
+    private String sellerId;
+    private Integer warehouseId;
 }

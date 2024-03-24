@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record InventoryResponseRecordDTO(
-        String productName,
+        String productId,
         Boolean available
 ) {
 }

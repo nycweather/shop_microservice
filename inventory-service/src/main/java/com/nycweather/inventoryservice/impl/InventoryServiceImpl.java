@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Slf4j
+@Service
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
 
@@ -25,23 +25,23 @@ public class InventoryServiceImpl implements InventoryService {
         this.inventoryRepository = inventoryRepository;
     }
 
-    public ResponseEntity<Object> checkInventory(List<String> productName, List<Integer> quantity) {
-        if (productName == null || quantity == null) {
+    public ResponseEntity<Object> checkInventory(List<String> productId, List<Integer> quantity) {
+        if (productId == null || quantity == null) {
             log.error("Product name or quantity is null");
             Map<String, String> response = Map.of("message", "Product name or quantity is null");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        if (productName.size() != quantity.size()) {
+        if (productId.size() != quantity.size()) {
             log.error("Product name and quantity size mismatch");
             Map<String, String> response = Map.of("message", "Product name and quantity size mismatch");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        List<Inventory> inventoryList = inventoryRepository.findByProductNameIn(productName);
+        List<Inventory> inventoryList = inventoryRepository.findByProductNameIn(productId);
         if (inventoryList.isEmpty()) {
             log.error("No products found in inventory");
             Map<String, String> response = Map.of("message", "No products found in inventory",
-                    "products", productName.toString());
+                    "products", productId.toString());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -52,7 +52,7 @@ public class InventoryServiceImpl implements InventoryService {
                 status = false;
             }
             InventoryResponseRecordDTO inventoryResponseRecordDTO = InventoryResponseRecordDTO.builder()
-                    .productName(inventoryItem.getProductName())
+                    .productId(inventoryItem.getProductId())
                     .available(inventoryItem.getQuantity() >= quantity.get(inventoryList.indexOf(inventoryItem)))
                     .build();
             returnInventoryList.add(inventoryResponseRecordDTO);

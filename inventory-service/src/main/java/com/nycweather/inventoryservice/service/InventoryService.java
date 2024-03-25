@@ -5,5 +5,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface InventoryService {
-    ResponseEntity<Object> checkInventory(List<String> productName, List<Integer> quantity);
+    ResponseEntity<Object> checkInventory(List<String> productId, List<Integer> quantity);
 }

@@ -29,11 +29,16 @@ public class ItemHandlerServiceImpl implements ItemHandlerService {
     }
 
     public ResponseEntity<AddInventoryResponseDTO> addInventory(AddInventoryRequestDTO addInventoryRequestDTO) {
+        List<Inventory> currentInventory = inventoryRepository.findByProductIdIn(List.of(addInventoryRequestDTO.productId()));
+        int currentInventoryCount = 0;
+        if (!currentInventory.isEmpty()) {
+            currentInventoryCount = currentInventory.get(0).getQuantity();
+        }
         inventoryRepository.save(
                 Inventory.builder()
                         .productId(addInventoryRequestDTO.productId())
                         .productName(addInventoryRequestDTO.productName())
-                        .quantity(addInventoryRequestDTO.quantity())
+                        .quantity(addInventoryRequestDTO.quantity() + currentInventoryCount)
                         .build()
         );
         List<InventorySku> inventorySkuList = new ArrayList<>();

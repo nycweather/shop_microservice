@@ -122,3 +122,9 @@ Wproduct-service/src/main/java/com/nycweather/productservice/exceptions/ErrorObj
 [inventory-service/src/main/java/com/nycweather/inventoryservice/exceptions/ErrorObject.java,d\8\d81618fd86c4c08512f0cf34f190ca5e6958f8f2
 §
 tinventory-service/src/main/java/com/nycweather/inventoryservice/exceptions/InventoryApplicationExceptionHandler.java,4\2\4293d6c781f7d9a62925f7670758e964ee563fab
+H
+discovery-server/pom.xml,2\c\2c58c7878e43d126fc56cae853d5b06de57d0b3e
+g
+7discovery-server/src/main/java/com/nycweather/Main.java,1\7\171acff261daa7598eb03f60cd90f1baef3d584d
+ç
+]discovery-server/src/main/java/com/nycweather/discoveryserver/DiscoveryServerApplication.java,6\7\671d0c8936ee4c380abb2ddedfaf5cc98329fb6b

@@ -26,8 +26,8 @@ public class InventoryController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Object> checkInventory(@RequestParam List<String> productName, @RequestParam List<Integer> quantity) {
-        return inventoryService.checkInventory(productName, quantity);
+    public ResponseEntity<Object> checkInventory(@RequestParam List<String> productId, @RequestParam List<Integer> quantity) {
+        return inventoryService.checkInventory(productId, quantity);
     }
 
     @PostMapping("/add_inventory")

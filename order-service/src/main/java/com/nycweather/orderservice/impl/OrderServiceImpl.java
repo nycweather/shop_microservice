@@ -21,12 +21,12 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderDtoMapper orderDtoMapper, WebClient webClient) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderDtoMapper orderDtoMapper, WebClient.Builder webClientBuilder) {
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
-        this.webClient = webClient;
+        this.webClientBuilder = webClientBuilder;
     }
 
     public ResponseEntity<Object> createOrder(OrderRequestDTO orderRequestDTO) {
@@ -46,8 +46,8 @@ public class OrderServiceImpl implements OrderService {
                         .build())
                 .toList();
         order.setOrderItems(orderItems);
-        InventoryResponseDTO itemsRequested = webClient.get()
-                .uri("http://localhost:8083/api/inventory/check",
+        InventoryResponseDTO itemsRequested = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory/check",
                         uriBuilder -> uriBuilder
                                 .queryParam("productName", orderItems.stream()
                                         .map(OrderItem::getProductName)
@@ -60,7 +60,6 @@ public class OrderServiceImpl implements OrderService {
                 .retrieve()
                 .bodyToMono(InventoryResponseDTO.class)
                 .block();
-        System.out.println(itemsRequested);
         log.info("Inventory check: {}", itemsRequested);
 
         if (itemsRequested != null && itemsRequested.message().equals("Inventory check successful")) {

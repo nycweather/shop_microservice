@@ -37,7 +37,7 @@ public class InventoryServiceImpl implements InventoryService {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        List<Inventory> inventoryList = inventoryRepository.findByProductNameIn(productId);
+        List<Inventory> inventoryList = inventoryRepository.findByProductIdIn(productId);
         if (inventoryList.isEmpty()) {
             log.error("No products found in inventory");
             Map<String, String> response = Map.of("message", "No products found in inventory",
@@ -47,22 +47,37 @@ public class InventoryServiceImpl implements InventoryService {
 
         boolean status = true;
         List<InventoryResponseRecordDTO> returnInventoryList = new ArrayList<>();
-        for (Inventory inventoryItem : inventoryList) {
-            if (inventoryItem.getQuantity() < quantity.get(inventoryList.indexOf(inventoryItem))) {
+        for (String product : productId) {
+            Inventory inventoryItem = inventoryList.stream()
+                    .filter(inventory -> inventory.getProductId().equals(product))
+                    .findFirst()
+                    .orElse(null);
+
+            if (inventoryItem == null) {
                 status = false;
+                InventoryResponseRecordDTO inventoryResponseRecordDTO = InventoryResponseRecordDTO.builder()
+                        .productId(product)
+                        .available(false)
+                        .build();
+                returnInventoryList.add(inventoryResponseRecordDTO);
+            } else {
+                if (inventoryItem.getQuantity() < quantity.get(productId.indexOf(product))) {
+                    status = false;
+                }
+                InventoryResponseRecordDTO inventoryResponseRecordDTO = InventoryResponseRecordDTO.builder()
+                        .productId(product)
+                        .available(inventoryItem.getQuantity() >= quantity.get(productId.indexOf(product)))
+                        .build();
+                returnInventoryList.add(inventoryResponseRecordDTO);
             }
-            InventoryResponseRecordDTO inventoryResponseRecordDTO = InventoryResponseRecordDTO.builder()
-                    .productId(inventoryItem.getProductId())
-                    .available(inventoryItem.getQuantity() >= quantity.get(inventoryList.indexOf(inventoryItem)))
-                    .build();
-            returnInventoryList.add(inventoryResponseRecordDTO);
+
         }
         String msg = status ? "Inventory check successful" : "Insufficient quantity for some products";
         InventoryResponseDTO response = InventoryResponseDTO.builder()
                 .message(msg)
                 .items(returnInventoryList)
                 .build();
-        log.info("Inventory check successful.", response);
+        log.info("Inventory check successful for: {}", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

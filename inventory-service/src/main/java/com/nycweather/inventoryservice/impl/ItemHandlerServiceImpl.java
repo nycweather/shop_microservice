@@ -2,6 +2,7 @@ package com.nycweather.inventoryservice.impl;
 
 import com.nycweather.inventoryservice.dto.AddInventoryRequestDTO;
 import com.nycweather.inventoryservice.dto.AddInventoryResponseDTO;
+import com.nycweather.inventoryservice.dto.InventoryInfoResponseDTO;
 import com.nycweather.inventoryservice.model.Inventory;
 import com.nycweather.inventoryservice.model.InventorySku;
 import com.nycweather.inventoryservice.repository.InventoryRepository;
@@ -26,6 +27,15 @@ public class ItemHandlerServiceImpl implements ItemHandlerService {
     public ItemHandlerServiceImpl(InventoryRepository inventoryRepository, InventorySkuRepository inventorySkuRepository) {
         this.inventoryRepository = inventoryRepository;
         this.inventorySkuRepository = inventorySkuRepository;
+    }
+
+    public ResponseEntity<InventoryInfoResponseDTO> getInventoryInfo(String productId) {
+        InventorySku inventorySku = inventorySkuRepository.findInventorySkuByProductId(productId);
+        return new ResponseEntity<>(InventoryInfoResponseDTO.builder()
+                .productId(inventorySku.getProductId())
+                .productName(inventorySku.getProductName())
+                .price(inventorySku.getPrice())
+                .build(), HttpStatus.OK);
     }
 
     public ResponseEntity<AddInventoryResponseDTO> addInventory(AddInventoryRequestDTO addInventoryRequestDTO) {

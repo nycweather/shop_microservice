@@ -3,10 +3,9 @@ package com.nycweather.productservice.dto;
 import lombok.Builder;
 
 @Builder
-public record ProductResponseDTO(
+public record InventoryInfoResponseDTO(
+        String productName,
         String productId,
-        String name,
-        String description,
         Double price
 ) {
 }

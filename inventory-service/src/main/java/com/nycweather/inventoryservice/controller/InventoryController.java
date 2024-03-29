@@ -2,6 +2,7 @@ package com.nycweather.inventoryservice.controller;
 
 import com.nycweather.inventoryservice.dto.AddInventoryRequestDTO;
 import com.nycweather.inventoryservice.dto.AddInventoryResponseDTO;
+import com.nycweather.inventoryservice.dto.InventoryInfoResponseDTO;
 import com.nycweather.inventoryservice.service.InventoryService;
 import com.nycweather.inventoryservice.service.ItemHandlerService;
 import jakarta.validation.Valid;
@@ -28,6 +29,11 @@ public class InventoryController {
     @GetMapping("/check")
     public ResponseEntity<Object> checkInventory(@RequestParam List<String> productId, @RequestParam List<Integer> quantity) {
         return inventoryService.checkInventory(productId, quantity);
+    }
+
+    @GetMapping("/info_dump/{productId}")
+    public ResponseEntity<InventoryInfoResponseDTO> getInventoryInfo(@PathVariable String productId) {
+        return itemHandlerService.getInventoryInfo(productId);
     }
 
     @PostMapping("/add_inventory")

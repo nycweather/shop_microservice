@@ -19,11 +19,15 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductDtoMapper productDtoMapper;
+    private final ProductAsyncTasks productAsyncTasks;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ProductDtoMapper productDtoMapper) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              ProductDtoMapper productDtoMapper,
+                              ProductAsyncTasks productAsyncTasks) {
         this.productRepository = productRepository;
         this.productDtoMapper = productDtoMapper;
+        this.productAsyncTasks = productAsyncTasks;
     }
 
     @Override
@@ -31,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productDtoMapper.toProduct(productRequestDTO);
         productRepository.save(product);
         log.info("Product: {} is created successfully", product.getName());
+        productAsyncTasks.addProductInformation(productRequestDTO);
     }
 
     @Override

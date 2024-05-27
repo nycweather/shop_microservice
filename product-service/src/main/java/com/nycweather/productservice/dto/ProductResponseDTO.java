@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ProductResponseDTO(
-        String id,
+        String productId,
         String name,
         String description,
         Double price

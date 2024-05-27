@@ -6,7 +6,10 @@ import com.nycweather.orderservice.model.OrderItem;
 import com.nycweather.orderservice.repository.OrderRepository;
 import com.nycweather.orderservice.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Date;
 import java.util.List;
@@ -18,13 +21,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
+    private final WebClient.Builder webClientBuilder;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderDtoMapper orderDtoMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderDtoMapper orderDtoMapper, WebClient.Builder webClientBuilder) {
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
+        this.webClientBuilder = webClientBuilder;
     }
 
-    public void createOrder(OrderRequestDTO orderRequestDTO) {
+    public ResponseEntity<Object> createOrder(OrderRequestDTO orderRequestDTO) {
         Order order = Order.builder()
                 .orderDate(new Date())
                 .orderNumber(1L)
@@ -36,13 +41,34 @@ public class OrderServiceImpl implements OrderService {
                         .productId(item.productId())
                         .order(order)
                         .price(0.0)
-                        .productName("product")
+                        .productName("iphone")
                         .quantity(item.quantity())
                         .build())
                 .toList();
         order.setOrderItems(orderItems);
-        orderRepository.save(order);
-        log.info("Order: {} is created successfully", order.getOrderId());
+        InventoryResponseDTO itemsRequested = webClientBuilder.build().get()
+                .uri("http://inventory-service/api/inventory/check",
+                        uriBuilder -> uriBuilder
+                                .queryParam("productName", orderItems.stream()
+                                        .map(OrderItem::getProductName)
+                                        .toList())
+                                .queryParam("quantity", orderItems.stream()
+                                        .map(OrderItem::getQuantity)
+                                        .toList())
+                                .build()
+                )
+                .retrieve()
+                .bodyToMono(InventoryResponseDTO.class)
+                .block();
+        log.info("Inventory check: {}", itemsRequested);
+
+        if (itemsRequested != null && itemsRequested.message().equals("Inventory check successful")) {
+            orderRepository.save(order);
+            return new ResponseEntity<>(itemsRequested, HttpStatus.CREATED);
+        } else {
+            log.error("Inventory check failed");
+            return new ResponseEntity<>(itemsRequested, HttpStatus.BAD_REQUEST);
+        }
     }
 
     public List<OrderResponseItemDTO> getOrderResponseItemsByOrderId(String orderId) {
